@@ -9,8 +9,9 @@
 (in-package #:storage)
 
 
-(defclass storage (benchmark)
-  ((count :accessor count :initform 0)))
+(defstruct (storage (:include benchmark)
+					(:conc-name ""))
+  (count 0))
 
 (defmethod benchmark ((self storage))
   (setf (count self) 0)
@@ -29,5 +30,4 @@
 			  do (setf (aref arr i) (build-tree-depth self (- depth 1) random)))
 		arr)))
 
-
-;; (format t "~A~%" (benchmark (make-instance 'storage)))
+;; (format t "~A~%" (benchmark (make-instance 'storage))))

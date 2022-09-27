@@ -7,7 +7,7 @@
 (in-package #:sieve)
 
 
-(defclass sieve (benchmark) ())
+(defstruct (sieve (:include benchmark)))
 
 (defmethod benchmark ((self sieve))
   (let ((flags (make-array 5000 :element-type 'boolean :initial-element t)))
