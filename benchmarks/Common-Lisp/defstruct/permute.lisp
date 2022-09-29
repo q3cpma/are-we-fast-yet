@@ -27,10 +27,10 @@
   (when (/= n 0)
 	(let ((n1 (- n 1)))
 	  (permute self n1)
-	  (loop for i from n1 downto 0
-			do (swap self n1 i)
-			do (permute self n1)
-			do (swap self n1 i)))))
+	  (loop :for i :from n1 :downto 0
+			:do (swap self n1 i)
+			:do (permute self n1)
+			:do (swap self n1 i)))))
 
 (defmethod swap ((self permute) i j)
   (with-slots (v) self

@@ -14,11 +14,12 @@ $ ./bench.sh 5 50 >results.tsv
     Notes
     -----
 
+* Try with fast-generic-functions, as generic functions are still slow.
 * CCL fails at NBody with inner-iterations = 250000 due to
   https://github.com/Clozure/ccl/issues/422
 * CLISP in interpreter mode is commented out in bench.sh because it is too damn
   slow for my taste and the bytecode compiler works well.
-* In bounce: abs should be useless in (bounce ball)
+* In bounce: abs should be useless in (bounce ball).
 * The results in tree were made on the following configuration:
 $ uname -a
 Linux gentoo-zen5900x 5.15.68-gentoo #1 SMP PREEMPT Fri Sep 16 17:49:43 CEST 2022 x86_64 AMD Ryzen 9 5900X 12-Core Processor AuthenticAMD GNU/Linux

@@ -41,12 +41,12 @@
 (defun is-shorter-than (x y)
   (let ((x-tail x)
 		(y-tail y))
-	(loop while y-tail
-		  if (null x-tail)
-			return t
-		  do (setf x-tail (next x-tail)
-				   y-tail (next y-tail))
-		  finally (return nil))))
+	(loop :while y-tail
+		  :if (null x-tail)
+			:return t
+		  :do (setf x-tail (next x-tail)
+					y-tail (next y-tail))
+		  :finally (return nil))))
 
 (defmethod tail ((self list) x y z)
   (if (is-shorter-than y x)

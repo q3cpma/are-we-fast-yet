@@ -8,9 +8,6 @@
 (in-package #:mandelbrot)
 
 
-(deftype positive-fixnum ()
-  `(integer 0 ,most-positive-fixnum))
-
 (defun mandelbrot (size)
   (loop with sum = 0
 		and byte-acc = 0

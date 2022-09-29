@@ -59,9 +59,9 @@
 		 (balls (make-array ball-count :element-type 'ball)))
 	(dotimes (i ball-count)
 	  (setf (aref balls i) (make-ball rand)))
-	(loop repeat 50
-		  sum (loop for ball across balls
-					count (bounce ball)))))
+	(loop :repeat 50
+		  :sum (loop :for ball :across balls
+					 :count (bounce ball)))))
 
 (defmethod verify-result ((self bounce) result)
   (= result 1331))

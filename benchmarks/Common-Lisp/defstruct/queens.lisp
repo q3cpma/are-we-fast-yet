@@ -15,7 +15,7 @@
   queen-rows)
 
 (defmethod benchmark ((self queens))
-  (loop repeat 10 always (queens self)))
+  (loop :repeat 10 :always (queens self)))
 
 (defmethod verify-result ((self queens) result)
   result)

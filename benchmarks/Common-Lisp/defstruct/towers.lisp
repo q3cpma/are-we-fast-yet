@@ -47,8 +47,8 @@
   (incf (moves-done self)))
 
 (defmethod build-tower-at ((self towers) pile disks)
-  (loop for i from disks downto 0
-		do (push-disk self (make-towers-disk :size i) pile)))
+  (loop :for i :from disks :downto 0
+		:do (push-disk self (make-towers-disk :size i) pile)))
 
 (defmethod move-disks ((self towers) disks from-pile to-pile)
   (if (= disks 1)

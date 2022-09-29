@@ -26,8 +26,8 @@
   (if (= depth 1)
 	  (make-array (+ (mod (som:next random) 10) 1))
 	  (let ((arr (make-array 4)))
-		(loop for i below 4
-			  do (setf (aref arr i) (build-tree-depth self (- depth 1) random)))
+		(loop :for i :below 4
+			  :do (setf (aref arr i) (build-tree-depth self (- depth 1) random)))
 		arr)))
 
 ;; (format t "~A~%" (benchmark (make-instance 'storage))))

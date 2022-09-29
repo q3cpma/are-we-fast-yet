@@ -16,3 +16,6 @@
 
 (defmethod next ((self random))
   (setf (random-seed self) (logand (+ (* (random-seed self) 1309) 13849) 65535)))
+
+(declaim (ftype (function (random) positive-fixnum) next)
+		 (inline next))
