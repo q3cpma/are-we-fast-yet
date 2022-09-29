@@ -8,8 +8,7 @@
 (in-package #:som)
 
 
-(deftype positive-fixnum ()
-  `(integer 0 ,most-positive-fixnum))
+(deftype positive-fixnum () `(integer 0 ,most-positive-fixnum))
 
 (defstruct random
   (seed 74755 :type positive-fixnum))

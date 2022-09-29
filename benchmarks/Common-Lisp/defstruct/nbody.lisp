@@ -136,10 +136,10 @@
 (defstruct (nbody (:include benchmark)))
 
 (defmethod inner-benchmark-loop ((self nbody) inner-iterations)
-  (loop with system = (make-nbody-system)
-		repeat inner-iterations
-		do (advance system 0.01)
-		finally (return (verify-result-override (energy system) inner-iterations))))
+  (loop :with system = (make-nbody-system)
+		:repeat inner-iterations
+		:do (advance system 0.01)
+		:finally (return (verify-result-override (energy system) inner-iterations))))
 
 (defun verify-result-override (result inner-iterations)
   (cond

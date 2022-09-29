@@ -34,20 +34,20 @@
 	  (incf y y-vel)
 	  (when (> x x-limit)
 		(psetf x x-limit
-			  x-vel (- (abs x-vel))
-			  bounced t))
+			   x-vel (- (abs x-vel))
+			   bounced t))
 	  (when (< x 0)
 		(psetf x 0
-			  x-vel (abs x-vel)
-			  bounced t))
+			   x-vel (abs x-vel)
+			   bounced t))
 	  (when (> y y-limit)
 		(psetf y y-limit
-			  y-vel (- (abs y-vel))
-			  bounced t))
+			   y-vel (- (abs y-vel))
+			   bounced t))
 	  (when (< y 0)
 		(psetf y 0
-			  y-vel (abs y-vel)
-			  bounced t))
+			   y-vel (abs y-vel)
+			   bounced t))
 	  bounced)))
 
 
@@ -59,9 +59,9 @@
 		 (balls (make-array ball-count :element-type 'ball)))
 	(dotimes (i ball-count)
 	  (setf (aref balls i) (make-ball rand)))
-	(loop repeat 50
-		  sum (loop for ball across balls
-					count (bounce ball)))))
+	(loop :repeat 50
+		  :sum (loop :for ball :across balls
+					 :count (bounce ball)))))
 
 (defmethod verify-result ((self bounce-opt) result)
   (= result 1331))

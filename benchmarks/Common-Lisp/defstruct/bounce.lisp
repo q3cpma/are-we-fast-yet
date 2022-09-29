@@ -33,21 +33,21 @@
 	  (incf x x-vel)
 	  (incf y y-vel)
 	  (when (> x x-limit)
-		(setf x x-limit
-			  x-vel (- (abs x-vel))
-			  bounced t))
+		(psetf x x-limit
+			   x-vel (- (abs x-vel))
+			   bounced t))
 	  (when (< x 0)
-		(setf x 0
-			  x-vel (abs x-vel)
-			  bounced t))
+		(psetf x 0
+			   x-vel (abs x-vel)
+			   bounced t))
 	  (when (> y y-limit)
-		(setf y y-limit
-			  y-vel (- (abs y-vel))
-			  bounced t))
+		(psetf y y-limit
+			   y-vel (- (abs y-vel))
+			   bounced t))
 	  (when (< y 0)
-		(setf y 0
-			  y-vel (abs y-vel)
-			  bounced t))
+		(psetf y 0
+			   y-vel (abs y-vel)
+			   bounced t))
 	  bounced)))
 
 

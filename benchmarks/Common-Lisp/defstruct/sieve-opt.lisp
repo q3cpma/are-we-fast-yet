@@ -25,7 +25,7 @@
 		:for i :of-type positive-fixnum :from 2 :upto size
 		:if (aref flags (- i 1))
 		  :do (incf prime-count)
-		  :and :do (loop for k from (+ i i) :upto size :by i
+		  :and :do (loop :for k :from (+ i i) :upto size :by i
 						 :do (setf (aref flags (- k 1)) nil))
 		:finally (return prime-count)))
 
