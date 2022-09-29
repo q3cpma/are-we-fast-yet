@@ -2,28 +2,29 @@
   (load "benchmark")
   (setf *read-default-float-format* 'double-float))
 
-(defpackage #:mandelbrot
+(defpackage #:mandelbrot-opt
   (:use #:cl #:benchmark)
   (:export #:benchmark #:verify-result))
-(in-package #:mandelbrot)
+(in-package #:mandelbrot-opt)
 
 
 (deftype positive-fixnum ()
   `(integer 0 ,most-positive-fixnum))
 
-(defun mandelbrot (size)
+(defun mandelbrot-opt (size)
+  (declare (type positive-fixnum size))
   (loop with sum = 0
 		and byte-acc = 0
 		and bit-num = 0
 		for y below size
-		for ci = (- (/ (* 2.0 y) size) 1.0)
+		for ci of-type double-float = (- (/ (* 2.0 y) size) 1.0)
 		do (loop for x below size
-				 for zr = 0.0
-				 for zrzr = 0.0
-				 for zi = 0.0
-				 for zizi = 0.0
-				 for cr = (- (/ (* 2.0 x) size) 1.5)
-				 for z = 0
+				 for zr   of-type double-float = 0.0
+				 for zrzr of-type double-float = 0.0
+				 for zi   of-type double-float = 0.0
+				 for zizi of-type double-float = 0.0
+				 for cr   of-type double-float = (- (/ (* 2.0 x) size) 1.5)
+				 for z    of-type positive-fixnum = 0
 				 for not-done = t
 				 for escape = 0
 				 do (loop while (and not-done (< z 50))
@@ -49,10 +50,10 @@
 		finally (return sum)))
 
 
-(defclass mandelbrot (benchmark) ())
+(defclass mandelbrot-opt (benchmark) ())
 
-(defmethod inner-benchmark-loop ((self mandelbrot) inner-iterations)
-  (verify-result-override (mandelbrot inner-iterations) inner-iterations))
+(defmethod inner-benchmark-loop ((self mandelbrot-opt) inner-iterations)
+  (verify-result-override (mandelbrot-opt inner-iterations) inner-iterations))
 
 (defun verify-result-override (result inner-iterations)
   (cond
@@ -64,12 +65,12 @@
 		 (format t "Result is: ~D~%" result)
 		 nil))))
 
-(defmethod benchmark ((self mandelbrot))
+(defmethod benchmark ((self mandelbrot-opt))
   (error "Should never be reached"))
 
-(defmethod verify-result ((self mandelbrot) result)
+(defmethod verify-result ((self mandelbrot-opt) result)
   (declare (ignore result))
   (error "Should never be reached"))
 
 
-;; (format t "~A~%" (mandelbrot 750))
+;; (format t "~A~%" (mandelbrot-opt 750))

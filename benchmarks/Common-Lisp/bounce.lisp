@@ -17,6 +17,7 @@
 
 (defmethod initialize-instance :after ((self ball) &rest args &key rand)
   (declare (ignore args))
+  (assert rand)
   (setf (x self) (mod (som:next rand) 500)
 		(y self) (mod (som:next rand) 500)
 		(x-vel self) (- (mod (som:next rand) 300) 150)

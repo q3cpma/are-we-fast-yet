@@ -2,11 +2,11 @@
   (load "benchmark")
   (load "som"))
 
-(defpackage #:bounce-opt1
+(defpackage #:bounce-opt
   (:use #:cl #:benchmark)
   (:shadow #:random)
   (:export #:benchmark #:verify-result))
-(in-package #:bounce-opt1)
+(in-package #:bounce-opt)
 
 
 (defstruct (ball (:constructor make-ball-raw (x y x-vel y-vel))
@@ -33,27 +33,27 @@
 	  (incf x x-vel)
 	  (incf y y-vel)
 	  (when (> x x-limit)
-		(setf x x-limit
+		(psetf x x-limit
 			  x-vel (- (abs x-vel))
 			  bounced t))
 	  (when (< x 0)
-		(setf x 0
+		(psetf x 0
 			  x-vel (abs x-vel)
 			  bounced t))
 	  (when (> y y-limit)
-		(setf y y-limit
+		(psetf y y-limit
 			  y-vel (- (abs y-vel))
 			  bounced t))
 	  (when (< y 0)
-		(setf y 0
+		(psetf y 0
 			  y-vel (abs y-vel)
 			  bounced t))
 	  bounced)))
 
 
-(defstruct (bounce-opt1 (:include benchmark)))
+(defstruct (bounce-opt (:include benchmark)))
 
-(defmethod benchmark ((self bounce-opt1))
+(defmethod benchmark ((self bounce-opt))
   (let* ((rand (som:make-random))
 		 (ball-count 100)
 		 (balls (make-array ball-count :element-type 'ball)))
@@ -63,8 +63,8 @@
 		  sum (loop for ball across balls
 					count (bounce ball)))))
 
-(defmethod verify-result ((self bounce-opt1) result)
+(defmethod verify-result ((self bounce-opt) result)
   (= result 1331))
 
 
-;; (format t "~A~%" (benchmark (make-instance 'bounce-opt1)))
+;; (format t "~A~%" (benchmark (make-instance 'bounce-opt)))

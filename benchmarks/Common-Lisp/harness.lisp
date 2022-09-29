@@ -1,4 +1,5 @@
 (declaim (optimize (debug 0) (safety 0) (speed 3)))
+(load (make-pathname :directory (pathname-directory *load-truename*) :name "uiop-minimal"))
 
 (defclass run ()
   ((name :accessor name :initarg :name :initform (error "name slot initarg is mandatory"))
@@ -43,7 +44,7 @@
 				   (- (get-internal-real-time) start)
 				   internal-time-units-per-second)))
 	(when (not result)
-	  (error "Benchmark failed with incorrect result"))
+	  (uiop:die 1 "Benchmark failed with incorrect result"))
 	(print-result self elapsed)
 	(incf (total self) elapsed)))
 
@@ -64,48 +65,9 @@
 
 
 
-;;; Proper command-line arguments (from UIOP)
-(defun raw-command-line-arguments ()
-  "Find what the actual command line for this process was."
-  #+abcl ext:*command-line-argument-list* ; Use 1.0.0 or later!
-  #+allegro (sys:command-line-arguments) ; default: :application t
-  #+(or clasp ecl) (loop :for i :from 0 :below (si:argc) :collect (si:argv i))
-  #+clisp (coerce (ext:argv) 'list)
-  #+clozure ccl:*command-line-argument-list*
-  #+(or cmucl scl) extensions:*command-line-strings*
-  #+gcl si:*command-args*
-  #+(or genera mcl mezzano) nil
-  #+lispworks sys:*line-arguments-list*
-  #+mkcl (loop :for i :from 0 :below (mkcl:argc) :collect (mkcl:argv i))
-  #+sbcl sb-ext:*posix-argv*
-  #+xcl system:*argv*
-  #-(or abcl allegro clasp clisp clozure cmucl ecl gcl genera lispworks mcl mezzano mkcl sbcl scl xcl)
-  (not-implemented-error 'raw-command-line-arguments))
-
-(defvar *image-dumped-p* nil)
-(defun command-line-arguments (&optional (arguments (raw-command-line-arguments)))
-  "Extract user arguments from command-line invocation of current process.
-Assume the calling conventions of a generated script that uses --
-if we are not called from a directly executable image."
-  (block nil
-	#+abcl (return arguments)
-	;; SBCL and Allegro already separate user arguments from implementation arguments.
-	#-(or sbcl allegro)
-	(unless (eq *image-dumped-p* :executable)
-	  ;; LispWorks command-line processing isn't transparent to the user
-	  ;; unless you create a standalone executable; in that case,
-	  ;; we rely on cl-launch or some other script to set the arguments for us.
-	  #+lispworks (return *command-line-arguments*)
-	  ;; On other implementations, on non-standalone executables,
-	  ;; we trust cl-launch or whichever script starts the program
-	  ;; to use -- as a delimiter between implementation arguments and user arguments.
-	  #-lispworks (setf arguments (member "--" arguments :test 'string-equal)))
-	(rest arguments)))
-
-
-(if (null (command-line-arguments))
+(if (null (uiop:command-line-arguments))
 	(error "Arguments: benchmark [num-iterations [inner-iterations]]"))
 
-(let ((run (apply #'make-run (command-line-arguments))))
+(let ((run (apply #'make-run (uiop:command-line-arguments))))
   (run-benchmark run)
   (print-total run))
