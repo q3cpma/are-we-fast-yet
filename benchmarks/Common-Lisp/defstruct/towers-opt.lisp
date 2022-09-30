@@ -31,7 +31,7 @@
 
 (defmethod push-disk ((self towers-opt) disk pile)
   (declare (type positive-fixnum pile)
-		   (type disk disk))
+		   (type towers-disk disk))
   (let ((top (aref (piles self) pile)))
 	(if (and top (>= (size disk) (size top)))
 		(error "Cannot put a big disk on a smaller one"))

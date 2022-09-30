@@ -66,7 +66,22 @@ time()
 
 num_iter=$1
 inner_iter=$2
-benchmarks='Sieve Storage Permute List Queens Bounce Bounce-opt Mandelbrot Mandelbrot-opt NBody NBody-opt'
+benchmarks=$(
+	find -type f -name '*.lisp' | \
+		awk -F/ '{print $NF}' | \
+		sort | \
+		uniq | \
+		grep -Evx '(benchmark|harness|som|template|uiop-minimal)\.lisp' | \
+		awk '
+		{
+			sub("\.lisp$", "")
+			if (sub("^nbody", "NBody"))
+				print
+			else
+				print toupper(substr($0, 1, 1)) substr($0, 2)
+		}'
+)
+benchmarks=Towers-opt
 
 first=true
 for bench in 'IMPL \ BENCH' $benchmarks

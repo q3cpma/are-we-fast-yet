@@ -38,3 +38,11 @@ $ ./bench.sh 10 50 | tee results.tsv | xsv table -d $'\t' >results.txt
 Some more -opt versions
 Try with Clasp, ABCL and GCL
 Find a way to try with LispWorks/Allegro?
+
+GCL 2.6.13_pre99 gives:
+    gcl -batch -load towers.lisp
+    ...
+    Condition in LOAD [or a callee]: INTERNAL-SIMPLE-UNBOUND-VARIABLE: Cell error on #:BENCHMARK: Unbound variable:
+    Broken at IN-PACKAGE.  Type :H for Help.
+
+for all the benchmarks
