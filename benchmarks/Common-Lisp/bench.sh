@@ -5,17 +5,17 @@ cd -- "$(dirname -- "$(readlink -f -- "$0")")"
 tolower() { echo "$1" | tr '[:upper:]' '[:lower:]'; }
 
 impls=$(
-	for impl in ccl sbcl ecl_bytecode ecl_native clisp_bytecode lua luajit python3 node # clisp_interp
+	for impl in ccl sbcl clasp ecl_bytecode ecl_native clisp_bytecode lua luajit python3 node # clisp_interp
 	do
 		command -v "${impl%_*}" >/dev/null && echo "$impl"
 	done | paste -sd' '
-	 )
-
+)
 trap 'exit 1' HUP INT QUIT ABRT ALRM TERM
 trap 'rm -f -- *.fas' EXIT
 
 ccl_ver=$(ccl --version | cut -d' ' -f2)
 sbcl_ver=$(sbcl --version | cut -d' ' -f2)
+clasp_ver=$(clasp --version | cut -d'-' -f 2-)
 ecl_ver=$(ecl --version | cut -d' ' -f2)
 clisp_ver=$(clisp --version | awk '{print $3; exit}')
 lua_ver=$(lua -v 2>&1 | cut -d' ' -f2)
@@ -23,8 +23,9 @@ luajit_ver=$(luajit -v | cut -d' ' -f2)
 python3_ver=$(python3 --version | cut -d' ' -f2)
 node_ver=$(node --version | sed 's#^v##')
 
-ccl() { command ccl -l harness.lisp --eval '(ccl:quit)' -- "$@"; }
+ccl() { command ccl -b -l harness.lisp --eval '(ccl:quit)' -- "$@"; }
 sbcl() { command sbcl --script harness.lisp "$@"; }
+clasp() { command clasp --script harness.lisp -- "$@"; }
 ecl_bytecode() { ecl --shell harness.lisp -- "$@"; }
 ecl_native()
 {
@@ -67,7 +68,7 @@ time()
 num_iter=$1
 inner_iter=$2
 benchmarks=$(
-	find -type f -name '*.lisp' | \
+	printf '%s\n' *.lisp | \
 		awk -F/ '{print $NF}' | \
 		sort | \
 		uniq | \
@@ -81,7 +82,6 @@ benchmarks=$(
 				print toupper(substr($0, 1, 1)) substr($0, 2)
 		}'
 )
-benchmarks=Towers-opt
 
 first=true
 for bench in 'IMPL \ BENCH' $benchmarks
@@ -94,32 +94,19 @@ echo
 for impl in $impls
 do
 	cmd=${impl%_*}
-	echo "$cmd" | grep -Eqx 'ccl|sbcl|ecl|clisp' && is_cl=
 	! command -v "$cmd" >/dev/null && continue
 	[ "$cmd" != "$impl" ] && impl_type=${impl#*_}
-	for variant in . ${is_cl+defstruct}
+	printf '%s' "$cmd${impl_type+ $impl_type} $(eval echo \$${cmd}_ver)"
+	for bench in $benchmarks
 	do
-		cd -- "$variant"
-		[ "$variant" = . ] && unset variant
-		printf '%s' "$cmd${impl_type+ $impl_type} $(eval echo \$${cmd}_ver)${variant+ ($variant)}"
-		for bench in $benchmarks
-		do
-			if { [ "${is_cl+x}" = x ] && ! [ -f "$(tolower "$bench")".lisp ]; } || \
-				{ ! [ "${is_cl+x}" = x ] && echo "$bench" | grep -Eq -- '-opt[0-9]?$'; }
-			then
-				printf '\t-'
-				continue
-			fi
-			_inner_iter=$inner_iter
-			[ "$inner_iter" != 1 ] && case "$bench" in
-				Mandelbrot*) _inner_iter=750;;
-				NBody*)      _inner_iter=250000;;
-			esac
-			# echo $impl $bench "$@" >&2
-			printf '\t%s' "$(time "$impl" "$bench" "$num_iter" "$_inner_iter")"
-		done
-		cd - >/dev/null
-		echo
+		_inner_iter=$inner_iter
+		[ "$inner_iter" != 1 ] && case "$bench" in
+			Mandelbrot*) _inner_iter=750;;
+			NBody*)      _inner_iter=250000;;
+		esac
+		# echo $impl $bench "$@" >&2
+		printf '\t%s' "$(time "$impl" "$bench" "$num_iter" "$_inner_iter")"
 	done
-	unset is_cl impl_type
+	echo
+	unset impl_type
 done

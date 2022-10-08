@@ -9,8 +9,11 @@
 (in-package #:storage)
 
 
-(defclass storage (benchmark)
-  ((count :accessor count :initform 0)))
+(deftype positive-fixnum () `(integer 0 ,most-positive-fixnum))
+
+(defstruct (storage (:include benchmark)
+						(:conc-name ""))
+  (count 0 :type positive-fixnum))
 
 (defmethod benchmark ((self storage))
   (setf (count self) 0)
@@ -21,13 +24,13 @@
   (= result 5461))
 
 (defmethod build-tree-depth ((self storage) depth random)
+  (declare (type positive-fixnum depth))
   (incf (count self))
   (if (= depth 1)
 	  (make-array (+ (mod (som:next random) 10) 1))
 	  (let ((arr (make-array 4)))
-		(loop for i below 4
-			  do (setf (aref arr i) (build-tree-depth self (- depth 1) random)))
+		(loop :for i :below 4
+			  :do (setf (aref arr i) (build-tree-depth self (- depth 1) random)))
 		arr)))
 
-
-;; (format t "~A~%" (benchmark (make-instance 'storage)))
+;; (format t "~A~%" (benchmark (make-storage))))

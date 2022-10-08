@@ -17,8 +17,10 @@
 		(let ((name-upcase (string-upcase (name self))))
 		  (load (name self))
 		  (lambda (iter) (funcall (symbol-function (find-symbol "INNER-BENCHMARK-LOOP" 'benchmark))
-								  (make-instance
-								   (find-symbol name-upcase (make-symbol name-upcase)))
+								  (funcall (symbol-function
+											(find-symbol (concatenate 'string "MAKE-" name-upcase)
+														 (make-symbol name-upcase))))
+
 								  iter)))))
 
 (defun make-run (name &optional num-iterations inner-iterations)

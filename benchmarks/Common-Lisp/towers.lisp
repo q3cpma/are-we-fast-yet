@@ -7,14 +7,17 @@
 (in-package #:towers)
 
 
-(defclass towers-disk ()
-  ((size :accessor size :initarg :size)
-   (next :accessor next :initform nil)))
+(deftype positive-fixnum () `(integer 0 ,most-positive-fixnum))
+
+(defstruct (towers-disk (:conc-name ""))
+  (size 0 :type positive-fixnum)
+  (next nil :type (or null towers-disk)))
 
 
-(defclass towers (benchmark)
-  ((piles :accessor piles :initform nil)
-   (moves-done :accessor moves-done :initform 0)))
+(defstruct (towers (:include benchmark)
+					   (:conc-name ""))
+  (piles #() :type (array))
+  (moves-done 0 :type positive-fixnum))
 
 (defmethod benchmark ((self towers))
   (setf (piles self) (make-array 3 :initial-element nil)
@@ -27,6 +30,8 @@
   (= result 8191))
 
 (defmethod push-disk ((self towers) disk pile)
+  (declare (type positive-fixnum pile)
+		   (type towers-disk disk))
   (let ((top (aref (piles self) pile)))
 	(if (and top (>= (size disk) (size top)))
 		(error "Cannot put a big disk on a smaller one"))
@@ -34,6 +39,7 @@
 		  (aref (piles self) pile) disk)))
 
 (defmethod pop-disk-from ((self towers) pile)
+  (declare (type positive-fixnum pile))
   (let ((top (aref (piles self) pile)))
 	(if (null top)
 		(error "Attempting to remove a disk from an empty pile"))
@@ -42,14 +48,16 @@
 	top))
 
 (defmethod move-top-disk ((self towers) from-pile to-pile)
+  (declare (type positive-fixnum from-pile to-pile))
   (push-disk self (pop-disk-from self from-pile) to-pile)
   (incf (moves-done self)))
 
 (defmethod build-tower-at ((self towers) pile disks)
-  (loop for i from disks downto 0
-		do (push-disk self (make-instance 'towers-disk :size i) pile)))
+  (loop :for i :from disks :downto 0
+		:do (push-disk self (make-towers-disk :size i) pile)))
 
 (defmethod move-disks ((self towers) disks from-pile to-pile)
+  (declare (type positive-fixnum disks from-pile to-pile))
   (if (= disks 1)
 	  (move-top-disk self from-pile to-pile)
 	  (let ((other-pile (- 3 from-pile to-pile)))
@@ -58,4 +66,4 @@
 		(move-disks self (- disks 1) other-pile to-pile))))
 
 
-;; (format t "~A~%" (benchmark (make-instance 'towers)))
+;; (format t "~A~%" (benchmark (make-towers)))

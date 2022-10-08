@@ -8,9 +8,10 @@
 (in-package #:permute)
 
 
-(defclass permute (benchmark)
-  ((count :accessor count :initform 0)
-   (v :accessor v)))
+(defstruct (permute (:include benchmark)
+					(:conc-name ""))
+  (count 0)
+  v)
 
 (defmethod benchmark ((self permute))
   (setf (count self) 0
@@ -26,10 +27,10 @@
   (when (/= n 0)
 	(let ((n1 (- n 1)))
 	  (permute self n1)
-	  (loop for i from n1 downto 0
-			do (swap self n1 i)
-			do (permute self n1)
-			do (swap self n1 i)))))
+	  (loop :for i :from n1 :downto 0
+			:do (swap self n1 i)
+			:do (permute self n1)
+			:do (swap self n1 i)))))
 
 (defmethod swap ((self permute) i j)
   (with-slots (v) self
@@ -38,4 +39,4 @@
 			(aref v j) tmp))))
 
 
-;; (format t "~A~%" (benchmark (make-instance 'permute)))
+;; (format t "~A~%" (benchmark (make-permute)))

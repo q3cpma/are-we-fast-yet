@@ -3,14 +3,14 @@
 
 (defpackage #:list
   (:use #:cl #:benchmark)
-  (:shadow #:length #:make-list #:list)
+  (:shadow #:length #:make-list #:copy-list #:list)
   (:export #:benchmark #:verify-result))
 (in-package #:list)
 
 
-(defclass element ()
-  ((val :accessor val :initarg :val)
-   (next :accessor next :initform nil)))
+(defstruct (element (:conc-name ""))
+  val
+  (next nil))
 
 (defmethod length ((self element))
   (if (next self)
@@ -18,34 +18,35 @@
 	  1))
 
 
-(defclass list (benchmark) ())
+(defstruct (list (:include benchmark)
+				 (:conc-name "")))
 
 (defmethod benchmark ((self list))
   (length
    (tail self
-		 (make-list 15)
-		 (make-list 10)
-		 (make-list 6))))
+		 (make-list-method 15)
+		 (make-list-method 10)
+		 (make-list-method 6))))
 
 (defmethod verify-result ((self list) result)
   (= result 10))
 
-(defun make-list (length)
+(defun make-list-method (length)
   (if (= length 0)
 	  nil
-	  (let ((e (make-instance 'element :val length)))
-		(setf (next e) (make-list (- length 1)))
+	  (let ((e (make-element :val length)))
+		(setf (next e) (make-list-method (- length 1)))
 		e)))
 
 (defun is-shorter-than (x y)
   (let ((x-tail x)
 		(y-tail y))
-	(loop while y-tail
-		  if (null x-tail)
-			return t
-		  do (setf x-tail (next x-tail)
-				   y-tail (next y-tail))
-		  finally (return nil))))
+	(loop :while y-tail
+		  :if (null x-tail)
+			:return t
+		  :do (setf x-tail (next x-tail)
+					y-tail (next y-tail))
+		  :finally (return nil))))
 
 (defmethod tail ((self list) x y z)
   (if (is-shorter-than y x)
@@ -56,4 +57,4 @@
 	  z))
 
 
-;; (format t "~A~%" (benchmark (make-instance 'list)))
+;; (format t "~A~%" (benchmark (make-list)))
