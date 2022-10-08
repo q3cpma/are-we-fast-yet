@@ -14,11 +14,10 @@ $ ./bench.sh 5 50 >results.tsv
     Notes
     -----
 
+* Known failures:
+      CCL with NBody 250000: https://github.com/Clozure/ccl/issues/422
+      Clasp with NBody: https://github.com/clasp-developers/clasp/issues/1371
 * Try with fast-generic-functions, as generic functions are still slow.
-* CCL fails at NBody with inner-iterations = 250000 due to
-  https://github.com/Clozure/ccl/issues/422
-* Clasp fails at NBody (https://github.com/clasp-developers/clasp/issues/1371)
-  and has a very slow startup in general
 * CLISP in interpreter mode is commented out in bench.sh because it is too damn
   slow for my taste and the bytecode compiler works well.
 * In bounce: abs should be useless in (bounce ball).
